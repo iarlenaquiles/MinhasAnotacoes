@@ -17,11 +17,14 @@ import com.aquiles.minhasanotacoes.databinding.ActivityMainBinding;
 
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.EditText;
 
 public class MainActivity extends AppCompatActivity {
 
     private AppBarConfiguration appBarConfiguration;
     private ActivityMainBinding binding;
+    private AnotacaoPreferencias preferencias;
+    private EditText editAnotacao;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,12 +33,30 @@ public class MainActivity extends AppCompatActivity {
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
+        editAnotacao = findViewById(R.id.editAnotacao);
+        preferencias = new AnotacaoPreferencias(getApplicationContext());
+
         binding.fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                // validar edit text
+                String textoRecuperado = editAnotacao.getText().toString();
+                if(textoRecuperado.equals("")) {
+                    Snackbar.make(view, "Preencha a anotação", Snackbar.LENGTH_LONG)
+                            .show();
+                } else {
+                    preferencias.salvarAnotacao(textoRecuperado);
+                    Snackbar.make(view, "Salva com sucesso", Snackbar.LENGTH_LONG)
+                            .show();
+                }
             }
         });
+
+        // recuperar a anotacao
+        String anotacao = preferencias.recuperarAnotacao();
+        if(!anotacao.equals("")) {
+            editAnotacao.setText(anotacao);
+        }
+
     }
 }
